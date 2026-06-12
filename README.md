@@ -38,12 +38,14 @@ Each file corresponds to a section of the book:
 | `Chapter3.py` | Chapter 3 — Sampling the Imaginary |
 | `Chapter4_3.py` | Chapter 4.3 — Gaussian model of height |
 | `Chapter4_4.py` | Chapter 4.4 — Linear prediction |
-| `Chapter4_5_1.py` | Chapter 4.5.1 — Polynomial regression |
-| `Chapter4_5_2.py` | Chapter 4.5.2 — Splines |
+| `Chapter4_5_1.py` | Chapter 4.5.1 — Curves from lines - Polynomial regression |
+| `Chapter4_5_2.py` | Chapter 4.5.2 — Curves from lines - Splines |
 | `Chapter5_1.py` | Chapter 5.1 — Spurious association |
 | `Chapter5_2.py` | Chapter 5.2 — Masked relationships |
 | `Chapter5_3.py` | Chapter 5.3 — Categorical variables |
 | `Chapter6_1.py` | Chapter 6.1 — Multicollinearity |
+| `Chapter6_2.py` | Chapter 6.2 — Post-treatment bias |
+| `Chapter6_3.py` | Chapter 6.3 — Collider bias |
 
 ## Requirements
 
