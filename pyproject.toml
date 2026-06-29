@@ -7,7 +7,7 @@ license = { text = "MIT" }
 authors = [
     { name = "Thomas Pijper" },
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.12"
 keywords = ["bayesian statistics", "pymc", "statistical rethinking", "arviz"]
 classifiers = [
     "License :: OSI Approved :: MIT License",
@@ -16,17 +16,20 @@ classifiers = [
     "Intended Audience :: Science/Research",
 ]
 dependencies = [
-    "arviz==0.23.4",
+    "arviz==1.2.0",
     "matplotlib==3.10.9",
     "numpy==2.4.6",
     "pandas==3.0.3",
-    "plotly==6.7.0",
-    "pymc==5.28.4",
-    "pymc-extras==0.10.0",
+    "pymc==6.0.1",
+    "pymc-extras==0.12.1",
     "scipy==1.17.1",
+    "seaborn==0.13.2",
     "statsmodels==0.14.6",
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = []
