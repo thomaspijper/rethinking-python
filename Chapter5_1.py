@@ -44,8 +44,9 @@ with pm.Model() as model_m51:
 # Code 5.4 — plotting the priors, recreating Figure 5.3
 with model_m51:
     idata_m51_prior = pm.sample_prior_predictive(draws=50, random_seed=10)
-prior_a = idata_m51_prior.prior["a"].values.ravel()
-prior_bA = idata_m51_prior.prior["bA"].values.ravel()
+prior = idata_m51_prior.prior.ds.stack(sample=("chain", "draw"))
+prior_a  = prior["a"].values   # (50,)
+prior_bA = prior["bA"].values  # (50,)
 A_seq = np.array([-2, 2])
 fig, ax = plt.subplots()
 for i in range(50):
@@ -64,8 +65,9 @@ plt.show()
 # mu    <- link(m5.1, data=list(A=A_seq))
 # mu.mean <- apply(mu, 2, mean)
 # mu.PI   <- apply(mu, 2, PI)
-sample_a  = idata_m51.posterior["a"].to_numpy().ravel()
-sample_bA = idata_m51.posterior["bA"].to_numpy().ravel()
+post_m51 = idata_m51.posterior.ds.stack(sample=("chain", "draw"))
+sample_a  = post_m51["a"].values
+sample_bA = post_m51["bA"].values
 A_seq     = np.linspace(-3, 3.2, 30)
 mu_post   = sample_a[:, None] + sample_bA[:, None] * A_seq[None, :]  # shape (10000, 30)
 mu_mean   = mu_post.mean(axis=0)
@@ -98,8 +100,9 @@ with pm.Model() as model_m52:
     idata_m52 = fit_laplace(draws=10_000)
 
 # Plotting the model (not shown in the book)
-sample_a  = idata_m52.posterior["a"].to_numpy().ravel()
-sample_bM = idata_m52.posterior["bM"].to_numpy().ravel()
+post_m52 = idata_m52.posterior.ds.stack(sample=("chain", "draw"))
+sample_a  = post_m52["a"].values
+sample_bM = post_m52["bM"].values
 M_seq     = np.linspace(-3, 3.2, 30)
 mu_post   = sample_a[:, None] + sample_bM[:, None] * M_seq[None, :]
 mu_mean   = mu_post.mean(axis=0)
@@ -154,7 +157,7 @@ for param in params:
         if param not in post:
             samples = np.full(100, np.nan)
         else:
-            samples = post[param].values.ravel()
+            samples = post[param].stack(sample=("chain", "draw")).values
         if np.all(np.isnan(samples)):
             yticks.append(y_pos); ylabels.append(f"{model_name}")
             y_pos += 1
@@ -193,8 +196,9 @@ with pm.Model() as model_m54_1:
     idata_m54_1 = fit_laplace(draws=10_000)
 
 # Code 5.14 — compute residuals: observed M minus posterior mean of predicted M
-sample_a_m54_1   = idata_m54_1.posterior["a"].to_numpy().ravel()
-sample_bAM_m54_1 = idata_m54_1.posterior["bAM"].to_numpy().ravel()
+post_m54_1 = idata_m54_1.posterior.ds.stack(sample=("chain", "draw"))
+sample_a_m54_1   = post_m54_1["a"].values
+sample_bAM_m54_1 = post_m54_1["bAM"].values
 mu_post_m54_1 = sample_a_m54_1[:, None] + sample_bAM_m54_1[:, None] * d["A"].to_numpy()[None, :]
 mu_mean_m54_1 = mu_post_m54_1.mean(axis=0)   # shape (n_obs,)
 mu_resid_m54_1    = d["M"].to_numpy() - mu_mean_m54_1
@@ -213,8 +217,9 @@ with pm.Model() as model_m54_2:
     idata_m54_2 = fit_laplace(draws=10_000)
 
 # Compute residuals: observed A minus posterior mean of predicted A
-sample_a_m54_2   = idata_m54_2.posterior["a"].to_numpy().ravel()
-sample_bAM_m54_2 = idata_m54_2.posterior["bAM"].to_numpy().ravel()
+post_m54_2 = idata_m54_2.posterior.ds.stack(sample=("chain", "draw"))
+sample_a_m54_2   = post_m54_2["a"].values
+sample_bAM_m54_2 = post_m54_2["bAM"].values
 mu_post_m54_2 = sample_a_m54_2[:, None] + sample_bAM_m54_2[:, None] * d["M"].to_numpy()[None, :]
 mu_mean_m54_2 = mu_post_m54_2.mean(axis=0)   # shape (n_obs,)
 mu_resid_m54_2    = d["A"].to_numpy() - mu_mean_m54_2
@@ -351,13 +356,14 @@ with pm.Model() as model_53_A:
 # use the observed M values for D rather than a fresh draw, breaking the causal chain.
 #
 # Extract posterior samples from the joint model
-s_aM      = idata_m53_A.posterior["aM"].to_numpy().ravel()       # shape (10000,)
-s_bAM     = idata_m53_A.posterior["bAM"].to_numpy().ravel()
-s_sigma_M = idata_m53_A.posterior["sigma_M"].to_numpy().ravel()
-s_a       = idata_m53_A.posterior["a"].to_numpy().ravel()
-s_bA      = idata_m53_A.posterior["bA"].to_numpy().ravel()
-s_bM      = idata_m53_A.posterior["bM"].to_numpy().ravel()
-s_sigma   = idata_m53_A.posterior["sigma"].to_numpy().ravel()
+post_m53_A = idata_m53_A.posterior.ds.stack(sample=("chain", "draw"))
+s_aM      = post_m53_A["aM"].values
+s_bAM     = post_m53_A["bAM"].values
+s_sigma_M = post_m53_A["sigma_M"].values
+s_a       = post_m53_A["a"].values
+s_bA      = post_m53_A["bA"].values
+s_bM      = post_m53_A["bM"].values
+s_sigma   = post_m53_A["sigma"].values
 
 # Simulate M from A, then D from simulated M and A (vars=c("M","D") in R)
 # shape (10000, 30) — one row per posterior draw, one column per A_seq value

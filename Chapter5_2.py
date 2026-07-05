@@ -115,8 +115,9 @@ print(az.summary(idata_m55, var_names=["a", "bN", "sigma"], ci_prob=0.89, round_
 # With complex models, the manual code below would be too complex and the PyMC
 # approach would be preferred.
 #
-sample_a  = idata_m55.posterior["a"].to_numpy().ravel()
-sample_bN = idata_m55.posterior["bN"].to_numpy().ravel()
+post_m55 = idata_m55.posterior.ds.stack(sample=("chain", "draw"))
+sample_a  = post_m55["a"].values
+sample_bN = post_m55["bN"].values
 N_vals = d["N"].to_numpy()
 N_seq  = np.linspace(N_vals.min() - 0.15, N_vals.max() + 0.15, 30)
 mu_post     = sample_a[:, None] + sample_bN[:, None] * N_seq[None, :]  # shape (10000, 30)
@@ -145,8 +146,9 @@ with pm.Model() as model_m56:
 print(az.summary(idata_m56, var_names=["a", "bM", "sigma"], ci_prob=0.89, round_to=2, kind="stats"))
 
 # Code for creating the second plot of Figure 5.9 (not shown in the book)
-sample_a  = idata_m56.posterior["a"].to_numpy().ravel()
-sample_bM = idata_m56.posterior["bM"].to_numpy().ravel()
+post_m56 = idata_m56.posterior.ds.stack(sample=("chain", "draw"))
+sample_a  = post_m56["a"].values
+sample_bM = post_m56["bM"].values
 M_vals = d["M"].to_numpy()
 M_seq  = np.linspace(M_vals.min() - 0.15, M_vals.max() + 0.15, 30)
 mu_post     = sample_a[:, None] + sample_bM[:, None] * M_seq[None, :]  # shape (10000, 30)
@@ -195,7 +197,7 @@ yticks, ylabels = [], []
 for param in cf_params:
     for model_name, idata in cf_models.items():
         post = idata.posterior.ds if hasattr(idata.posterior, "ds") else idata.posterior
-        samples = post[param].values.ravel() if param in post else np.full(100, np.nan)
+        samples = post[param].stack(sample=("chain", "draw")).values if param in post else np.full(100, np.nan)
         if np.all(np.isnan(samples)):
             yticks.append(y_pos); ylabels.append(model_name); y_pos += 1
             continue
@@ -219,9 +221,10 @@ plt.show()
 
 # Code 5.41 (and more) — counterfactual plots using m5.7 posterior samples
 # We'll make both lower plots of Figure 3.9 in one go
-sample_a_m57  = idata_m57.posterior["a"].to_numpy().ravel()
-sample_bN_m57 = idata_m57.posterior["bN"].to_numpy().ravel()
-sample_bM_m57 = idata_m57.posterior["bM"].to_numpy().ravel()
+post_m57 = idata_m57.posterior.ds.stack(sample=("chain", "draw"))
+sample_a_m57  = post_m57["a"].values
+sample_bN_m57 = post_m57["bN"].values
+sample_bM_m57 = post_m57["bM"].values
 
 # Vary M, hold N=0
 M_cf_seq = np.linspace(M_vals.min() - 0.15, M_vals.max() + 0.15, 30)

@@ -36,13 +36,13 @@ d2 = d[d["age"] >= 18]["height"]
 # Code 4.12, 4.13 and, 4.14
 # Plotting of the prior distributions and prior predictive simulation is done below
 rng_prior = np.random.default_rng(42)
-sample_mu    = rng_prior.normal(178, 20,   size=10_000)    # mu    ~ Normal(178, 20)
+sample_mu = rng_prior.normal(178, 20,   size=10_000)    # mu    ~ Normal(178, 20)
 sample_sigma = rng_prior.uniform(0,   50,  size=10_000)    # sigma ~ Uniform(0, 50)
-prior_h      = rng_prior.normal(sample_mu, sample_sigma)   # h     ~ Normal(mu, sigma)
+prior_h = rng_prior.normal(sample_mu, sample_sigma)   # h     ~ Normal(mu, sigma)
 
 # Code 4.14 — wider prior: sigma same, but mu ~ Normal(178, 100)
 sample_mu_wide = rng_prior.normal(178, 100, size=10_000)
-prior_h_wide   = rng_prior.normal(sample_mu_wide, sample_sigma)
+prior_h_wide = rng_prior.normal(sample_mu_wide, sample_sigma)
 
 # Recreation of Figure 4.3
 fig, axes = plt.subplots(2, 2, figsize=(10, 8))
@@ -122,9 +122,9 @@ plt.show()
 # Code 4.19 — sample from the posterior distribution
 prob_norm = prob / prob.sum()                   # normalise to sum to 1
 flat_prob = prob_norm.ravel()                   # shape (10000,)
-rng_samp  = np.random.default_rng(42)
-sample_rows  = rng_samp.choice(len(flat_prob), size=10_000, replace=True, p=flat_prob / flat_prob.sum())
-sample_mu_g  = mu_grid.ravel()[sample_rows]
+rng_samp = np.random.default_rng(42)
+sample_rows = rng_samp.choice(len(flat_prob), size=10_000, replace=True, p=flat_prob / flat_prob.sum())
+sample_mu_g = mu_grid.ravel()[sample_rows]
 sample_sig_g = sigma_grid.ravel()[sample_rows]
 
 # Code 4.20 — scatter plot of posterior samples
@@ -175,9 +175,9 @@ prob2 = np.exp(log_prod2 - log_prod2.max())
 
 prob_norm2 = prob2 / prob2.sum()                   # normalise to sum to 1
 flat_prob2 = prob_norm2.ravel()                   # shape (10000,) — row-major (mu varies fastest with indexing="ij")
-rng_samp  = np.random.default_rng(42)
-sample_rows2  = rng_samp.choice(len(flat_prob2), size=10_000, replace=True, p=flat_prob2 / flat_prob2.sum())
-sample_mu_g2  = mu_grid2.ravel()[sample_rows2]
+rng_samp = np.random.default_rng(42)
+sample_rows2 = rng_samp.choice(len(flat_prob2), size=10_000, replace=True, p=flat_prob2 / flat_prob2.sum())
+sample_mu_g2 = mu_grid2.ravel()[sample_rows2]
 sample_sig_g2 = sigma_grid2.ravel()[sample_rows2]
 
 fig, ax = plt.subplots()
@@ -230,9 +230,25 @@ print(az.summary(idata_m42, var_names=["mu", "sigma"], ci_prob=0.89, round_to=2,
 ### 4.3.6 Sampling from quap ###
 
 # Code 4.32 — variance-covariance matrix from posterior samples (constrained/original space)
-sample_mu    = idata_m41.posterior["mu"].to_numpy().ravel()
-sample_sigma = idata_m41.posterior["sigma"].to_numpy().ravel()
-cov_matrix   = np.cov(sample_mu, sample_sigma)
+#
+# .stack() flattens the chain and draw dimensions into a single sample dimension while keeping
+# the data an xarray Dataset. I prefer this over .numpy().ravel() (which merely gives an array),
+# because it keeps the context of the data intact. This has a few uses, including:
+#   1. It allows you to easily convert the samples into a DataFrame with .to_dataframe()
+#   2. vector/matrix parameters are retained, allowing for transposing with .T and other operations
+#   3. for categorical models where parameters have named dims, stacked Dataset lets you slice by name
+#
+# If downstream operations rely on the samples being a numpy.ndarray, you can always convert to that with .values.
+#
+# BTW, Instead of as a bulk operation, it is also possible to extract the samples for each variable
+# directly / separately:
+#     sample_mu = idata_m41.posterior["mu"].stack(sample=("chain", "draw"))
+#     sample_sigma = idata_m41.posterior["sigma"].stack(sample=("chain", "draw"))
+#
+post_m41 = idata_m41.posterior.ds.stack(sample=("chain", "draw"))
+sample_mu = post_m41["mu"].values
+sample_sigma = post_m41["sigma"].values
+cov_matrix = np.cov(sample_mu, sample_sigma)
 vcov_laplace = pd.DataFrame(cov_matrix, index=["μ", "σ"], columns=["μ", "σ"])
 print("\nVariance-covariance matrix (Laplace, from posterior samples):")
 print(vcov_laplace.to_string(float_format="{:.10f}".format))

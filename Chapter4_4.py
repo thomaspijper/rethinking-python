@@ -82,10 +82,11 @@ print(az.summary(idata_m43, var_names=["a", "b", "sigma"], ci_prob=0.89, round_t
 
 
 # Code 4.45 — variance-covariance matrix from posterior samples
-sample_a     = idata_m43.posterior["a"].to_numpy().ravel()
-sample_b     = idata_m43.posterior["b"].to_numpy().ravel()
-sample_sigma = idata_m43.posterior["sigma"].to_numpy().ravel()
-cov_matrix   = np.cov(np.stack([sample_a, sample_b, sample_sigma]))
+post_m43 = idata_m43.posterior.ds.stack(sample=("chain", "draw"))
+sample_a = post_m43["a"].values
+sample_b = post_m43["b"].values
+sample_sigma = post_m43["sigma"].values
+cov_matrix = np.cov(np.stack([sample_a, sample_b, sample_sigma]))
 vcov_laplace = pd.DataFrame(cov_matrix, index=["a", "b", "σ"], columns=["a", "b", "σ"])
 print("\nVariance-covariance matrix (Laplace, from posterior samples):")
 print(vcov_laplace.to_string(float_format="{:.3f}".format))

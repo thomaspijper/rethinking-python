@@ -43,11 +43,12 @@ print(az.summary(idata_m45, var_names=["a", "b1", "b2", "sigma"], ci_prob=0.89, 
 # Code 4.67 — computing mean relationship and the 89% intervals of the mean and the predictions
 # weight.seq <- seq(from=-2.2, to=2, length.out=30)   (standardized weight sequence)
 # pred_dat   <- list(weight_s=weight.seq, weight_s2=weight.seq^2)
-weight_seq_s = np.linspace(-2.2, 2, 30)               # shape (30,) — standardized
-sample_a     = idata_m45.posterior["a"].to_numpy().ravel()
-sample_b1    = idata_m45.posterior["b1"].to_numpy().ravel()
-sample_b2    = idata_m45.posterior["b2"].to_numpy().ravel()
-sample_sigma = idata_m45.posterior["sigma"].to_numpy().ravel()
+weight_seq_s = np.linspace(-2.2, 2, 30) # shape (30,) — standardized
+post_m45 = idata_m45.posterior.ds.stack(sample=("chain", "draw"))
+sample_a = post_m45["a"].values
+sample_b1 = post_m45["b1"].values
+sample_b2 = post_m45["b2"].values
+sample_sigma = post_m45["sigma"].values
 
 # mu <- link(m4.5, data=pred_dat)
 mu_link = (sample_a[:, np.newaxis]
@@ -174,8 +175,9 @@ with pm.Model() as model_m47:
 w_mean = idata_m47.posterior["w"].mean(dim=["chain", "draw"]).to_numpy()
 
 # Code 4.78 — compute 97% posterior interval for mu at each observation (equivalent to link + PI in R)
-sample_a = idata_m47.posterior["a"].to_numpy().ravel()                         # (n_samples,)
-sample_w = idata_m47.posterior["w"].to_numpy().reshape(-1, B.shape[1])         # (n_samples, 17)
+post_m47 = idata_m47.posterior.ds.stack(sample=("chain", "draw"))
+sample_a = post_m47["a"].values                          # (n_samples,)
+sample_w = post_m47["w"].values.T                        # (n_samples, 17) — xarray puts w_dim_0 first after stack
 mu_samples = sample_a[:, None] + (sample_w @ B.T)                          # (n_samples, n_obs)
 mu_pi = np.percentile(mu_samples, [1.5, 98.5], axis=0)                     # 97% PI
 
