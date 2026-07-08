@@ -26,6 +26,7 @@ CHAPTERS = [
     "Chapter6_1.py",
     "Chapter6_2.py",
     "Chapter6_3.py",
+    "Chapter7.py",
 ]
 
 WORKSPACE = Path(__file__).parent
