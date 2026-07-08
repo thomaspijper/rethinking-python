@@ -22,11 +22,11 @@ from pymc_extras.inference import fit_laplace
 #    for better interpretability
 d: pd.DataFrame = pd.read_csv("WaffleDivorce.csv", sep=";")
 mean_A, std_A = d["MedianAgeMarriage"].mean(), d["MedianAgeMarriage"].std(ddof=1)
-mean_M, std_M = d["Marriage"].mean(),           d["Marriage"].std(ddof=1)
-mean_D, std_D = d["Divorce"].mean(),             d["Divorce"].std(ddof=1)
+mean_M, std_M = d["Marriage"].mean(), d["Marriage"].std(ddof=1)
+mean_D, std_D = d["Divorce"].mean(), d["Divorce"].std(ddof=1)
 d["A"] = (d["MedianAgeMarriage"] - mean_A) / std_A
-d["M"] = (d["Marriage"]          - mean_M) / std_M
-d["D"] = (d["Divorce"]           - mean_D) / std_D
+d["M"] = (d["Marriage"] - mean_M) / std_M
+d["D"] = (d["Divorce"] - mean_D) / std_D
 
 # Code 5.2 — Standard deviation of median age at marriage
 print(std_A)
@@ -39,7 +39,6 @@ with pm.Model() as model_m51:
     mu = a + bA * d["A"]
     pm.Normal("D", mu=mu, sigma=sigma, observed=d["D"].to_numpy())
     idata_m51 = fit_laplace(draws=10_000)
-    # extract.prior(m5.1) — draw 50 samples from the prior distributions,
 
 # Code 5.4 — plotting the priors, recreating Figure 5.3
 with model_m51:
@@ -135,6 +134,7 @@ with pm.Model() as model_m53:
     pm.Deterministic("mu", mu)
     pm.Normal("D", mu=mu, sigma=sigma, observed=d["D"].to_numpy())
     idata_m53 = fit_laplace(draws=10_000)
+
 print(az.summary(idata_m53, var_names=["a", "bM", "bA", "sigma"], ci_prob=0.89, round_to=2, kind="stats"))
 
 # Code 5.11 — coeftab plot: compare bA and bM across models
