@@ -48,6 +48,7 @@ Each file corresponds to a section of the book:
 | `Chapter6_1.py` | Chapter 6.1 — Multicollinearity |
 | `Chapter6_2.py` | Chapter 6.2 — Post-treatment bias |
 | `Chapter6_3.py` | Chapter 6.3 — Collider bias |
+| `Chapter7.py` | Chapter 7 — Ulysses' Compass |
 
 ## Requirements
 
