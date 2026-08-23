@@ -8,7 +8,7 @@ This is a work in progress. I'll keep adding examples as I work my way through t
 
 ## A note on versions
 
-The examples use PyMC 6.0 and ArviZ 1.2.0. Because of breaking changes at the ArviZ 1.0.0 release, the examples do not work with pre-1.0.0 versions.
+The examples use PyMC 6.2 and ArviZ 1.3.0. Because of breaking changes at the ArviZ 1.0.0 release, the examples do not work with pre-1.0.0 versions.
 
 I tried to keep the list of dependencies to a minimum, but that turned out to be harder than expected — McElreath uses a wide range of functionality across the book, and no single Python package covers all of it. The current set of packages is about as lean as I could get it.
 
@@ -49,6 +49,13 @@ Each file corresponds to a section of the book:
 | `Chapter6_2.py` | Chapter 6.2 — Post-treatment bias |
 | `Chapter6_3.py` | Chapter 6.3 — Collider bias |
 | `Chapter7.py` | Chapter 7 — Ulysses' Compass |
+| `Chapter8_12.py` | Chapter 8.1 — Building an interaction and Chapter 8.2 — Symmetry of interactions |
+| `Chapter8_3.py` | Chapter 8.3 — Continuous interactions |
+| `Chapter9_1.py` | Chapter 9.1 — Good King Markov and his island kingdom |
+| `Chapter9_2.py` | Chapter 9.2 — Metropolis algorithms |
+| `Chapter9_4.py` | Chapter 9.4 — Easy HMC: ulam |
+| `Chapter9_5.py` | Chapter 9.5 — Care and feeding of your Markov chain |
+
 
 ## Requirements
 
