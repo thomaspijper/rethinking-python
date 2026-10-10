@@ -1,6 +1,6 @@
 [project]
 name = "rethinking-python"
-version = "0.1.0"
+version = "0.1.1"
 description = "Python implementations of the examples from Statistical Rethinking by Richard McElreath"
 readme = "README.md"
 license = { text = "MIT" }
